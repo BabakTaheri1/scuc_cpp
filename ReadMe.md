@@ -90,7 +90,7 @@ Let $\mathcal{K}_g=\{0,1,\dots,K_g-1\}$ be the startup stage set.
 
 ### 2.2 Profiled generator parameters (for each $p\in\mathcal{P}$)
 - Time-varying bounds:
-  $P^{min}_{p,t},\; P^{max}_{p,t}$
+  $P^{min}_{p,t}; P^{max}_{p,t}$
 - Linear generation cost:
   $C^{prof}_p$
 
