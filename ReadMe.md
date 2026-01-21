@@ -84,7 +84,7 @@ Let $\mathcal{S}_g=\{0,1,\dots,S_g-1\}$ be the segment set.
 #### Startup categories / stages (for each thermal $g$)
 Let $\mathcal{K}_g=\{0,1,\dots,K_g-1\}$ be the startup stage set.
 - Stage $k$ has:
-  $Del_{g,k}\in\mathbb{Z}_{\ge 0}, \quad C^{SU}_{g,k}\ge 0$
+  $\mathrm{Del}_{g,k}\in\mathbb{Z}_{\ge 0}, \quad C^{SU}_{g,k}\ge 0$
 
 ---
 
@@ -204,7 +204,6 @@ $$Pen^{curt}=\sum_{b}\sum_{t} Pen^{curt}\,curt_{b,t}$$
 
 ### 4.7 Line overflow penalties
 $$Pen^{flow} = \sum_{\ell}\sum_{t} Pen^{flow}_\ell\,ov^{base}_{\ell,t} + \sum_{q}\sum_{t} Pen^{flow}_{\ell(q)}\,ov^{cont}_{q,t}$$
-
 
 ---
 
@@ -351,7 +350,7 @@ $$p_{g,t}+r_{\text{map\_res}(g),t}\le P^{max}_g\,u_{g,t}$$
 This section describes the exact logic enforced by the code for choosing startup categories.
 
 Assume stages are indexed so that:
-$$Del_{g,0}\le Del_{g,1}\le \dots \le Del_{g,K_g-1}$$
+$$\mathrm{Del}_{g,0}\le \mathrm{Del}_{g,1}\le \dots \le \mathrm{Del}_{g,K_g-1}$$
 
 Let `initOn_g` $=\mathbf{1}[init\_status_g>0]$ and if `initOn_g` $=0$ define initial offline duration:
 $$initOffDur_g = -init\_status_g \quad (\text{else } initOffDur_g=0).$$
@@ -362,11 +361,11 @@ For each time $t\in\mathcal{T}$ and each $k\in\{0,\dots,K_g-2\}$, define:
 - An initial-status allowance term $L^{init}_{g,k,t}\in\{0,1\}$:
   - If the unit is initially OFF, define `offdur` $= initOffDur_g + t$.
   - Then:
-    $$L^{init}_{g,k,t} = \begin{cases} 1 & \text{if } offdur \in [Del_{g,k},\, Del_{g,k+1}-1] \\ 0 & \text{otherwise} \end{cases}$$
+    $$L^{init}_{g,k,t} = \begin{cases} 1 & \text{if } offdur \in [\mathrm{Del}_{g,k},\, \mathrm{Del}_{g,k+1}-1] \\ 0 & \text{otherwise} \end{cases}$$
   - If initially ON, then $L^{init}_{g,k,t}=0$.
 
 - A shutdown window:
-  $$lb = \max(0,\; t-Del_{g,k+1}+1), \qquad ub = t-Del_{g,k}.$$
+  $$lb = \max(0,\; t-\mathrm{Del}_{g,k+1}+1), \qquad ub = t-\mathrm{Del}_{g,k}.$$
 
 Then the code enforces:
 $$v_{g,k,t} - \sum_{i=lb}^{ub} w_{g,i} \le L^{init}_{g,k,t}, \quad \text{whenever } ub\ge 0 \text{ and } lb\le ub.$$
@@ -377,7 +376,7 @@ $$v_{g,k,t} \le L^{init}_{g,k,t}.$$
 **Interpretation (code-consistent):**
 - Selecting startup category $k$ at time $t$ is permitted if either:
   - the **initial offline duration** implies category $k$ is feasible at time $t$ (via $L^{init}=1$), or
-  - there has been at least one **shutdown event** $w_{g,i}=1$ in the window $i\in[lb,ub]$, i.e., a shutdown occurred at a time consistent with being offline for a duration in $[Del_{g,k},\,Del_{g,k+1}-1]$.
+  - there has been at least one **shutdown event** $w_{g,i}=1$ in the window $i\in[lb,ub]$, i.e., a shutdown occurred at a time consistent with being offline for a duration in $[\mathrm{Del}_{g,k},\,\mathrm{Del}_{g,k+1}-1]$.
 
 The **coldest** category $K_g-1$ is not restricted by this routine and is therefore always feasible (subject to the other startup constraints like $y_{g,t}\le u_{g,t}$ and $y_{g,t}\le 1-u_{g,t-1}$).
 
