@@ -70,8 +70,8 @@ All indices are **0-based**, consistent with the code.
   $C^{NL}_g$
 
 - Initial status (integer):
-  - `init_status_g` $> 0$: unit initially ON for $| \text{init\_status}_g |$ periods
-  - `init_status_g` $< 0$: unit initially OFF for $| \text{init\_status}_g |$ periods
+  - `init_status_g` $> 0$: unit initially ON for $|\text{init\_status\_g}|$ periods
+  - `init_status_g` $< 0$: unit initially OFF for $|\text{init\_status\_g}|$ periods
 
 - Initial power:
   $P^{init}_g$
@@ -240,7 +240,7 @@ Fix a generator $g\in\mathcal{G}$.
 
 ## 6.1 Initial boundary fixes (remaining min up/down)
 
-Let $h_g=|\text{init\_status}_g|$, and `initOn_g` $=\mathbf{1}[\text{init\_status}_g>0]$.
+Let $h_g=|\text{init\_status\_g}|$, and `initOn_g` $=\mathbf{1}[\text{init\_status\_g}>0]$.
 
 If `initOn_g` $=1$, define $remUp_g=\max(0,U_g-h_g)$ and enforce:
 $$u_{g,t}=1 \quad \forall t=0,\dots,\min(T-1,remUp_g-1)$$
@@ -251,11 +251,11 @@ $$u_{g,t}=0 \quad \forall t=0,\dots,\min(T-1,remDn_g-1)$$
 ---
 
 ## 6.2 Initial transition at $t=0$
-$$u_{g,0}-\text{initOn}_g = y_{g,0}-w_{g,0}$$
+$$u_{g,0}-\text{initOn\_g} = y_{g,0}-w_{g,0}$$
 
 ### 6.2a Optional tightening at $t=0$ (enforced in code)
-$$w_{g,0} \le \text{initOn}_g$$
-$$y_{g,0} \le 1-\text{initOn}_g$$
+$$w_{g,0} \le \text{initOn\_g}$$
+$$y_{g,0} \le 1-\text{initOn\_g}$$
 
 ---
 
@@ -316,8 +316,8 @@ Ramp-down ($t\ge 1$):
 $$p^{above}_{g,t-1}-p^{above}_{g,t}\le RD_g$$
 
 Initial ramps ($t=0$):
-Let `initOn_g` $=\mathbf{1}[\text{init\_status}_g>0]$ and
-$$p^{init,above}_g= \begin{cases} \max(0, P^{init}_g-P^{min}_g) & \text{if } \text{initOn}_g=1 \\ 0 & \text{if } \text{initOn}_g=0 \end{cases}$$
+Let `initOn_g` $=\mathbf{1}[\text{init\_status\_g}>0]$ and
+$$p^{init,above}_g= \begin{cases} \max(0, P^{init}_g-P^{min}_g) & \text{if } \text{initOn\_g}=1 \\ 0 & \text{if } \text{initOn\_g}=0 \end{cases}$$
 Then:
 $$p^{above}_{g,0}+r_{g,0}\le p^{init,above}_g+RU_g$$
 $$p^{above}_{g,0}\le RD_g - p^{init,above}_g$$
@@ -358,14 +358,14 @@ This section describes the exact logic enforced by the code for choosing startup
 Assume stages are indexed so that:
 $$Del_{g,0}\le Del_{g,1}\le \dots \le Del_{g,K_g-1}$$
 
-Let `initOn_g` $=\mathbf{1}[\text{init\_status}_g>0]$ and if `initOn_g` $=0$ define initial offline duration:
-$$initOffDur_g = -\text{init\_status}_g \quad (\text{else } initOffDur_g=0)$$
+Let `initOn_g` $=\mathbf{1}[\text{init\_status\_g}>0]$ and if `initOn_g` $=0$ define initial offline duration:
+$$initOffDur_g = -\text{init\_status\_g} \quad (\text{else } initOffDur\_g=0)$$
 
 The code adds constraints only for categories $k=0,\dots,K_g-2$ (the last category is not restricted by this routine).
 
 For each time $t\in\mathcal{T}$ and each $k\in\{0,\dots,K_g-2\}$, define:
 - An initial-status allowance term $L^{init}_{g,k,t}\in\{0,1\}$:
-  - If the unit is initially OFF, define `offdur` $= initOffDur_g + t$.
+  - If the unit is initially OFF, define `offdur` $= initOffDur\_g + t$.
   - Then:
     $$L^{init}_{g,k,t} = \begin{cases} 1 & \text{if } \text{offdur} \in [Del_{g,k},\, Del_{g,k+1}-1] \\ 0 & \text{otherwise} \end{cases}$$
   - If initially ON, then $L^{init}_{g,k,t}=0$.
