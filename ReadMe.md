@@ -1,4 +1,4 @@
-# SCUC (OR-Tools MILP) — Full Model Documentation (Matches Provided C++ Code)
+# Security Constrained Unit Commitment (SCUC) — Full Model Documentation
 
 This document describes the mathematical optimization model implemented in the provided C++ code (“SCUC”).  
 
@@ -35,7 +35,7 @@ All indices are **0-based**, consistent with the code.
 - **Reserve-eligible thermal generators**:  
   Let $\mathcal{G}^{res}\subseteq \mathcal{G}$ be the subset of thermal gens that can provide reserve.  
   Code builds a mapping:
-  $\text{map\_res}:\mathcal{G}^{res}\to \{0,1,\dots,|\mathcal{G}^{res}|-1\}$
+  `map_res`: $\mathcal{G}^{res}\to \{0,1,\dots,|\mathcal{G}^{res}|-1\}$
   and reserve variables are indexed by $i\in\{0,\dots,|\mathcal{G}^{res}|-1\}$.
 
 - **Relevant N-1 contingency pairs**:  
@@ -67,15 +67,15 @@ All indices are **0-based**, consistent with the code.
   $C^{NL}_g$
 
 - Initial status (integer):
-  - $init\_status_g>0$: unit initially ON for $|init\_status_g|$ periods
-  - $init\_status_g<0$: unit initially OFF for $|init\_status_g|$ periods
+  - `init_status_g` $> 0$: unit initially ON for $|init\_status_g|$ periods
+  - `init_status_g` $< 0$: unit initially OFF for $|init\_status_g|$ periods
 
 - Initial power:
   $P^{init}_g$
 
 - Must-run flag and optional fixed commitment status:
-  - must-run: $must\_run_g\in\{0,1\}$
-  - optional fixed commitment sequence $fix_{g,t}\in\{0,1\}$ for some times $t$
+  - must-run: `must_run_g` $\in\{0,1\}$
+  - optional fixed commitment sequence `fix`$_{g,t}\in\{0,1\}$ for some times $t$
 
 #### Piecewise-linear production segments (for each thermal $g$)
 Let $\mathcal{S}_g=\{0,1,\dots,S_g-1\}$ be the segment set.
@@ -280,14 +280,14 @@ Fix a generator $g\in\mathcal{G}$.
 
 ## 6.1 Initial boundary fixes (remaining min up/down)
 
-Let $h_g=|init\_status_g|$, and $initOn_g=\mathbf{1}[init\_status_g>0]$.
+Let $h_g=|init\_status_g|$, and `initOn_g` $=\mathbf{1}[init\_status_g>0]$.
 
-If $initOn_g=1$, define $remUp_g=\max(0,U_g-h_g)$ and enforce:
+If `initOn_g` $=1$, define $remUp_g=\max(0,U_g-h_g)$ and enforce:
 $$
 u_{g,t}=1 \quad \forall t=0,\dots,\min(T-1,remUp_g-1)
 $$
 
-If $initOn_g=0$, define $remDn_g=\max(0,D_g-h_g)$ and enforce:
+If `initOn_g` $=0$, define $remDn_g=\max(0,D_g-h_g)$ and enforce:
 $$
 u_{g,t}=0 \quad \forall t=0,\dots,\min(T-1,remDn_g-1)
 $$
@@ -394,7 +394,7 @@ p^{above}_{g,t-1}-p^{above}_{g,t}\le RD_g
 $$
 
 Initial ramps ($t=0$):
-Let $initOn_g=\mathbf{1}[init\_status_g>0]$ and
+Let `initOn_g` $=\mathbf{1}[init\_status_g>0]$ and
 $$
 p^{init,above}_g=
 \begin{cases}
@@ -439,7 +439,7 @@ If must-run:
 $$
 u_{g,t}=1 \quad \forall t
 $$
-If fixed commitment $fix_{g,t}$ is provided:
+If fixed commitment `fix`$_{g,t}$ is provided:
 $$
 u_{g,t}=fix_{g,t} \quad \text{for those } t
 $$
@@ -463,7 +463,7 @@ $$
 Del_{g,0}\le Del_{g,1}\le \dots \le Del_{g,K_g-1}
 $$
 
-Let $initOn_g=\mathbf{1}[init\_status_g>0]$ and if $initOn_g=0$ define initial offline duration:
+Let `initOn_g` $=\mathbf{1}[init\_status_g>0]$ and if `initOn_g` $=0$ define initial offline duration:
 $$
 initOffDur_g = -init\_status_g \quad (\text{else } initOffDur_g=0).
 $$
@@ -472,7 +472,7 @@ The code adds constraints only for categories $k=0,\dots,K_g-2$ (the last catego
 
 For each time $t\in\mathcal{T}$ and each $k\in\{0,\dots,K_g-2\}$, define:
 - An initial-status allowance term $L^{init}_{g,k,t}\in\{0,1\}$:
-  - If the unit is initially OFF, define $offdur = initOffDur_g + t$.
+  - If the unit is initially OFF, define `offdur` $= initOffDur_g + t$.
   - Then:
     $$
     L^{init}_{g,k,t} =
