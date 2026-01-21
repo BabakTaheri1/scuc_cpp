@@ -141,13 +141,13 @@ Let $\mathcal{K}_g=\{0,1,\dots,K_g-1\}$ be the startup stage set.
 - $v_{g,k,t}\in\{0,1\}$ for $k\in\mathcal{K}_g$
 
 Define the (implicit) switch-on indicator:
-$y_{g,t}\triangleq \sum_{k\in\mathcal{K}_g} v_{g,k,t}$
+$$y_{g,t}\triangleq \sum_{k\in\mathcal{K}_g} v_{g,k,t}$$
 
 #### Segment production
 - $p^{seg}_{g,s,t}\ge 0$ for $s\in\mathcal{S}_g$
 
 Above-min production (not explicit variable in code):
-$p^{above}_{g,t}\triangleq \sum_{s\in\mathcal{S}_g} p^{seg}_{g,s,t}$
+$$p^{above}_{g,t}\triangleq \sum_{s\in\mathcal{S}_g} p^{seg}_{g,s,t}$$
 
 ---
 
@@ -182,59 +182,28 @@ $p^{above}_{g,t}\triangleq \sum_{s\in\mathcal{S}_g} p^{seg}_{g,s,t}$
 ## 4) Objective Function
 
 Minimize total cost:
-$$
-\min\; \Big(
-C^{thermal} + C^{startup} + C^{prof} - Rev^{psl}
-+ Pen^{res\_short} + Pen^{curt} + Pen^{flow}
-\Big)
-$$
+$$\min\; \Big( C^{thermal} + C^{startup} + C^{prof} - Rev^{psl} + Pen^{res\_short} + Pen^{curt} + Pen^{flow} \Big)$$
 
 ### 4.1 Thermal no-load + energy
-$$
-C^{thermal}
-=
-\sum_{g}\sum_{t} C^{NL}_g\,u_{g,t}
-+
-\sum_{g}\sum_{s}\sum_{t} c_{g,s}\,p^{seg}_{g,s,t}
-$$
+$$C^{thermal} = \sum_{g}\sum_{t} C^{NL}_g\,u_{g,t} + \sum_{g}\sum_{s}\sum_{t} c_{g,s}\,p^{seg}_{g,s,t}$$
 
 ### 4.2 Startup costs
-$$
-C^{startup}
-=
-\sum_{g}\sum_{k}\sum_{t} C^{SU}_{g,k}\,v_{g,k,t}
-$$
+$$C^{startup} = \sum_{g}\sum_{k}\sum_{t} C^{SU}_{g,k}\,v_{g,k,t}$$
 
 ### 4.3 Profiled generation cost
-$$
-C^{prof}=\sum_{p}\sum_{t} C^{prof}_p\,p^{prof}_{p,t}
-$$
+$$C^{prof}=\sum_{p}\sum_{t} C^{prof}_p\,p^{prof}_{p,t}$$
 
 ### 4.4 PSL revenue (subtracted)
-$$
-Rev^{psl}=\sum_{d}\sum_{t} Rev_{d,t}\,s^{psl}_{d,t}
-$$
+$$Rev^{psl}=\sum_{d}\sum_{t} Rev_{d,t}\,s^{psl}_{d,t}$$
 
 ### 4.5 Reserve shortfall penalty (only if $Pen^{res}_r>0$)
-$$
-Pen^{res\_short}
-=
-\sum_{r:Pen^{res}_r>0}\sum_{t} Pen^{res}_r\,sh_{r,t}
-$$
+$$Pen^{res\_short} = \sum_{r:Pen^{res}_r>0}\sum_{t} Pen^{res}_r\,sh_{r,t}$$
 
 ### 4.6 Curtailment penalty
-$$
-Pen^{curt}=\sum_{b}\sum_{t} Pen^{curt}\,curt_{b,t}
-$$
+$$Pen^{curt}=\sum_{b}\sum_{t} Pen^{curt}\,curt_{b,t}$$
 
 ### 4.7 Line overflow penalties
-$$
-Pen^{flow}
-=
-\sum_{\ell}\sum_{t} Pen^{flow}_\ell\,ov^{base}_{\ell,t}
-+
-\sum_{q}\sum_{t} Pen^{flow}_{\ell(q)}\,ov^{cont}_{q,t}
-$$
+$$Pen^{flow} = \sum_{\ell}\sum_{t} Pen^{flow}_\ell\,ov^{base}_{\ell,t} + \sum_{q}\sum_{t} Pen^{flow}_{\ell(q)}\,ov^{cont}_{q,t}$$
 
 
 ---
@@ -244,17 +213,7 @@ $$
 ## 5.1 System power balance
 
 For each $t\in\mathcal{T}$:
-$$
-\sum_{g} p_{g,t}
-+
-\sum_{p} p^{prof}_{p,t}
-+
-\sum_{b} curt_{b,t}
--
-\sum_{d} s^{psl}_{d,t}
-=
-\sum_{b} Load_{t,b}
-$$
+$$\sum_{g} p_{g,t} + \sum_{p} p^{prof}_{p,t} + \sum_{b} curt_{b,t} - \sum_{d} s^{psl}_{d,t} = \sum_{b} Load_{t,b}$$
 
 ---
 
@@ -263,14 +222,10 @@ $$
 For each reserve product $r\in\mathcal{R}$ and time $t\in\mathcal{T}$:
 
 - If $Pen^{res}_r>0$:
-$$
-\sum_{i} r_{i,t} + sh_{r,t} \ge Req_{r,t}
-$$
+$$\sum_{i} r_{i,t} + sh_{r,t} \ge Req_{r,t}$$
 
 - If $Pen^{res}_r\le 0$:
-$$
-\sum_{i} r_{i,t} \ge Req_{r,t}
-$$
+$$\sum_{i} r_{i,t} \ge Req_{r,t}$$
 
 ---
 
@@ -283,174 +238,111 @@ Fix a generator $g\in\mathcal{G}$.
 Let $h_g=|init\_status_g|$, and `initOn_g` $=\mathbf{1}[init\_status_g>0]$.
 
 If `initOn_g` $=1$, define $remUp_g=\max(0,U_g-h_g)$ and enforce:
-$$
-u_{g,t}=1 \quad \forall t=0,\dots,\min(T-1,remUp_g-1)
-$$
+$$u_{g,t}=1 \quad \forall t=0,\dots,\min(T-1,remUp_g-1)$$
 
 If `initOn_g` $=0$, define $remDn_g=\max(0,D_g-h_g)$ and enforce:
-$$
-u_{g,t}=0 \quad \forall t=0,\dots,\min(T-1,remDn_g-1)
-$$
+$$u_{g,t}=0 \quad \forall t=0,\dots,\min(T-1,remDn_g-1)$$
 
 ---
 
 ## 6.2 Initial transition at $t=0$
-$$
-u_{g,0}-initOn_g = y_{g,0}-w_{g,0}
-$$
+$$u_{g,0}-initOn_g = y_{g,0}-w_{g,0}$$
 
 ### 6.2a Optional tightening at $t=0$ (enforced in code)
-$$
-w_{g,0} \le initOn_g
-$$
-$$
-y_{g,0} \le 1-initOn_g
-$$
+$$w_{g,0} \le initOn_g$$
+$$y_{g,0} \le 1-initOn_g$$
 
 ---
 
 ## 6.3 Power definition
-$$
-p_{g,t}=P^{min}_g\,u_{g,t}+\sum_{s\in\mathcal{S}_g}p^{seg}_{g,s,t}
-$$
+$$p_{g,t}=P^{min}_g\,u_{g,t}+\sum_{s\in\mathcal{S}_g}p^{seg}_{g,s,t}$$
 
 ---
 
 ## 6.4 Segment bounds
-$$
-0\le p^{seg}_{g,s,t}\le \ell_{g,s}\,u_{g,t}
-$$
+$$0\le p^{seg}_{g,s,t}\le \ell_{g,s}\,u_{g,t}$$
 
 ---
 
 ## 6.5 Commitment logic for $t\ge 1$
 For $t=1,\dots,T-1$:
-$$
-u_{g,t}-u_{g,t-1}=y_{g,t}-w_{g,t}
-$$
+$$u_{g,t}-u_{g,t-1}=y_{g,t}-w_{g,t}$$
 
 ---
 
 ## 6.6 Start/shut gating (as in code)
 For all $t$:
 - Startup implies on:
-$$
-y_{g,t} \le u_{g,t}
-$$
+$$y_{g,t} \le u_{g,t}$$
 - For $t\ge 1$, startup only if was previously off:
-$$
-y_{g,t} \le 1-u_{g,t-1}
-$$
+$$y_{g,t} \le 1-u_{g,t-1}$$
 - For $t\ge 1$, shutdown only if was previously on:
-$$
-w_{g,t} \le u_{g,t-1}
-$$
+$$w_{g,t} \le u_{g,t-1}$$
 - For $t\ge 1$, shutdown implies off now:
-$$
-w_{g,t}+u_{g,t}\le 1
-$$
+$$w_{g,t}+u_{g,t}\le 1$$
 
 ---
 
 ## 6.7 One action per period
-$$
-y_{g,t}+w_{g,t}\le 1 \quad \forall t\in\mathcal{T}
-$$
+$$y_{g,t}+w_{g,t}\le 1 \quad \forall t\in\mathcal{T}$$
 
 ---
 
 ## 6.8 Minimum up/down time (cumulative)
 
 Minimum up-time:
-$$
-\sum_{\tau=\max(0,t-U_g+1)}^{t} y_{g,\tau} \le u_{g,t}
-\quad \forall t\in\mathcal{T}
-$$
+$$\sum_{\tau=\max(0,t-U_g+1)}^{t} y_{g,\tau} \le u_{g,t} \quad \forall t\in\mathcal{T}$$
 
 Minimum down-time (equivalent to code’s form):
-$$
-\sum_{\tau=\max(0,t-D_g+1)}^{t} w_{g,\tau} \le 1-u_{g,t}
-\quad \forall t\in\mathcal{T}
-$$
+$$\sum_{\tau=\max(0,t-D_g+1)}^{t} w_{g,\tau} \le 1-u_{g,t} \quad \forall t\in\mathcal{T}$$
 
 ---
 
 ## 6.9 Ramping (implemented on above-min)
 
 Define:
-$$
-p^{above}_{g,t}=\sum_{s\in\mathcal{S}_g} p^{seg}_{g,s,t}.
-$$
+$$p^{above}_{g,t}=\sum_{s\in\mathcal{S}_g} p^{seg}_{g,s,t}.$$
 If $g$ is reserve-eligible, define $r_{g,t}=r_{\text{map\_res}(g),t}$; otherwise $r_{g,t}=0$.
 
 Ramp-up ($t\ge 1$):
-$$
-p^{above}_{g,t}+r_{g,t}-p^{above}_{g,t-1}\le RU_g
-$$
+$$p^{above}_{g,t}+r_{g,t}-p^{above}_{g,t-1}\le RU_g$$
 
 Ramp-down ($t\ge 1$):
-$$
-p^{above}_{g,t-1}-p^{above}_{g,t}\le RD_g
-$$
+$$p^{above}_{g,t-1}-p^{above}_{g,t}\le RD_g$$
 
 Initial ramps ($t=0$):
 Let `initOn_g` $=\mathbf{1}[init\_status_g>0]$ and
-$$
-p^{init,above}_g=
-\begin{cases}
-\max(0, P^{init}_g-P^{min}_g) & \text{if } initOn_g=1 \\
-0 & \text{if } initOn_g=0
-\end{cases}
-$$
+$$p^{init,above}_g= \begin{cases} \max(0, P^{init}_g-P^{min}_g) & \text{if } initOn_g=1 \\ 0 & \text{if } initOn_g=0 \end{cases}$$
 Then:
-$$
-p^{above}_{g,0}+r_{g,0}\le p^{init,above}_g+RU_g
-$$
-$$
-p^{above}_{g,0}\le RD_g - p^{init,above}_g
-$$
+$$p^{above}_{g,0}+r_{g,0}\le p^{init,above}_g+RU_g$$
+$$p^{above}_{g,0}\le RD_g - p^{init,above}_g$$
 ---
 
 ## 6.10 Startup/shutdown tightening
 
 Let:
-$$
-Cap^{above}_g=P^{max}_g-P^{min}_g
-$$
-$$
-A_g=\max(0,P^{max}_g-P^{SUlim}_g),\quad
-B_g=\max(0,P^{max}_g-P^{SDlim}_g)
-$$
+$$Cap^{above}_g=P^{max}_g-P^{min}_g$$
+$$A_g=\max(0,P^{max}_g-P^{SUlim}_g),\quad B_g=\max(0,P^{max}_g-P^{SDlim}_g)$$
 
 Startup limit (all $t$):
-$$
-p^{above}_{g,t}+r_{g,t}\le Cap^{above}_g\,u_{g,t}-A_g\,y_{g,t}
-$$
+$$p^{above}_{g,t}+r_{g,t}\le Cap^{above}_g\,u_{g,t}-A_g\,y_{g,t}$$
 
 Shutdown limit (for $t=0,\dots,T-2$):
-$$
-p^{above}_{g,t}\le Cap^{above}_g\,u_{g,t}-B_g\,w_{g,t+1}
-$$
+$$p^{above}_{g,t}\le Cap^{above}_g\,u_{g,t}-B_g\,w_{g,t+1}$$
 
 ---
 
 ## 6.11 Must-run / fixed commitment
 If must-run:
-$$
-u_{g,t}=1 \quad \forall t
-$$
+$$u_{g,t}=1 \quad \forall t$$
 If fixed commitment `fix`$_{g,t}$ is provided:
-$$
-u_{g,t}=fix_{g,t} \quad \text{for those } t
-$$
+$$u_{g,t}=fix_{g,t} \quad \text{for those } t$$
 
 ---
 
 ## 6.12 Reserve headroom (reserve-eligible only)
 For $g\in\mathcal{G}^{res}$:
-$$
-p_{g,t}+r_{\text{map\_res}(g),t}\le P^{max}_g\,u_{g,t}
-$$
+$$p_{g,t}+r_{\text{map\_res}(g),t}\le P^{max}_g\,u_{g,t}$$
 
 ---
 
@@ -459,14 +351,10 @@ $$
 This section describes the exact logic enforced by the code for choosing startup categories.
 
 Assume stages are indexed so that:
-$$
-Del_{g,0}\le Del_{g,1}\le \dots \le Del_{g,K_g-1}
-$$
+$$Del_{g,0}\le Del_{g,1}\le \dots \le Del_{g,K_g-1}$$
 
 Let `initOn_g` $=\mathbf{1}[init\_status_g>0]$ and if `initOn_g` $=0$ define initial offline duration:
-$$
-initOffDur_g = -init\_status_g \quad (\text{else } initOffDur_g=0).
-$$
+$$initOffDur_g = -init\_status_g \quad (\text{else } initOffDur_g=0).$$
 
 The code adds constraints only for categories $k=0,\dots,K_g-2$ (the last category is not restricted by this routine).
 
@@ -474,30 +362,17 @@ For each time $t\in\mathcal{T}$ and each $k\in\{0,\dots,K_g-2\}$, define:
 - An initial-status allowance term $L^{init}_{g,k,t}\in\{0,1\}$:
   - If the unit is initially OFF, define `offdur` $= initOffDur_g + t$.
   - Then:
-    $$
-    L^{init}_{g,k,t} =
-    \begin{cases}
-    1 & \text{if } offdur \in [Del_{g,k},\, Del_{g,k+1}-1] \\
-    0 & \text{otherwise}
-    \end{cases}
-    $$
+    $$L^{init}_{g,k,t} = \begin{cases} 1 & \text{if } offdur \in [Del_{g,k},\, Del_{g,k+1}-1] \\ 0 & \text{otherwise} \end{cases}$$
   - If initially ON, then $L^{init}_{g,k,t}=0$.
 
 - A shutdown window:
-  $$
-  lb = \max(0,\; t-Del_{g,k+1}+1), \qquad ub = t-Del_{g,k}.
-  $$
+  $$lb = \max(0,\; t-Del_{g,k+1}+1), \qquad ub = t-Del_{g,k}.$$
 
 Then the code enforces:
-$$
-v_{g,k,t} - \sum_{i=lb}^{ub} w_{g,i} \le L^{init}_{g,k,t},
-\quad \text{whenever } ub\ge 0 \text{ and } lb\le ub.
-$$
+$$v_{g,k,t} - \sum_{i=lb}^{ub} w_{g,i} \le L^{init}_{g,k,t}, \quad \text{whenever } ub\ge 0 \text{ and } lb\le ub.$$
 
 If the window is empty (i.e., $ub<0$ or $lb>ub$), the constraint reduces to:
-$$
-v_{g,k,t} \le L^{init}_{g,k,t}.
-$$
+$$v_{g,k,t} \le L^{init}_{g,k,t}.$$
 
 **Interpretation (code-consistent):**
 - Selecting startup category $k$ at time $t$ is permitted if either:
@@ -510,25 +385,19 @@ The **coldest** category $K_g-1$ is not restricted by this routine and is theref
 
 # 8) Profiled Generator Constraints
 For each $p\in\mathcal{P}$ and $t\in\mathcal{T}$:
-$$
-P^{min}_{p,t}\le p^{prof}_{p,t}\le P^{max}_{p,t}
-$$
+$$P^{min}_{p,t}\le p^{prof}_{p,t}\le P^{max}_{p,t}$$
 
 ---
 
 # 9) Price-Sensitive Load Constraints
 For each $d\in\mathcal{D}$ and $t\in\mathcal{T}$:
-$$
-0\le s^{psl}_{d,t}\le D^{max}_{d,t}
-$$
+$$0\le s^{psl}_{d,t}\le D^{max}_{d,t}$$
 
 ---
 
 # 10) Curtailment Bounds
 For each $b\in\mathcal{B}$ and $t\in\mathcal{T}$:
-$$
-0\le curt_{b,t}\le Load_{t,b}
-$$
+$$0\le curt_{b,t}\le Load_{t,b}$$
 
 ---
 
@@ -538,49 +407,24 @@ The code does not explicitly create net-injection or flow variables; it builds l
 
 ## 11.1 Net injections (conceptual)
 For bus $b$ and time $t$:
-$$
-inj_{b,t}=
-\sum_{g\in\mathcal{G}(b)}p_{g,t}
-+
-\sum_{p\in\mathcal{P}(b)}p^{prof}_{p,t}
--
-\sum_{d\in\mathcal{D}(b)}s^{psl}_{d,t}
--
-Load_{t,b}
-+
-curt_{b,t}
-$$
+$$inj_{b,t}= \sum_{g\in\mathcal{G}(b)}p_{g,t} + \sum_{p\in\mathcal{P}(b)}p^{prof}_{p,t} - \sum_{d\in\mathcal{D}(b)}s^{psl}_{d,t} - Load_{t,b} + curt_{b,t}$$
 
 ## 11.2 Base flow (conceptual)
-$$
-flow^{base}_{\ell,t}=\sum_{b} PTDF_{\ell,b}\,inj_{b,t}
-$$
+$$flow^{base}_{\ell,t}=\sum_{b} PTDF_{\ell,b}\,inj_{b,t}$$
 
 ## 11.3 Base soft limits
 For each line $\ell$ and time $t$:
-$$
-flow^{base}_{\ell,t}\le Lim^{N}_{\ell}+ov^{base}_{\ell,t}
-$$
-$$
--flow^{base}_{\ell,t}\le Lim^{N}_{\ell}+ov^{base}_{\ell,t}
-$$
+$$flow^{base}_{\ell,t}\le Lim^{N}_{\ell}+ov^{base}_{\ell,t}$$
+$$-flow^{base}_{\ell,t}\le Lim^{N}_{\ell}+ov^{base}_{\ell,t}$$
 
 ## 11.4 Contingency flow for pair $q=(k(q),\ell(q))$
 Let $k=k(q)$ and $\ell=\ell(q)$. Then:
-$$
-flow^{cont}_{q,t}
-=
-\sum_{b}\Big(PTDF_{\ell,b}+LODF_{\ell,k}\,PTDF_{k,b}\Big)\,inj_{b,t}
-$$
+$$flow^{cont}_{q,t} = \sum_{b}\Big(PTDF_{\ell,b}+LODF_{\ell,k}\,PTDF_{k,b}\Big)\,inj_{b,t}$$
 
 ## 11.5 Contingency soft limits
 For each pair $q$ and time $t$:
-$$
-flow^{cont}_{q,t}\le Lim^{E}_{\ell(q)}+ov^{cont}_{q,t}
-$$
-$$
--flow^{cont}_{q,t}\le Lim^{E}_{\ell(q)}+ov^{cont}_{q,t}
-$$
+$$flow^{cont}_{q,t}\le Lim^{E}_{\ell(q)}+ov^{cont}_{q,t}$$
+$$-flow^{cont}_{q,t}\le Lim^{E}_{\ell(q)}+ov^{cont}_{q,t}$$
 
 ---
 
