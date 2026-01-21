@@ -1,6 +1,6 @@
 # Security Constrained Unit Commitment (SCUC) — Full Model Documentation
 
-This document describes the mathematical optimization model implemented in the provided C++ code (“SCUC”).  
+This document describes the mathematical optimization model implemented in the provided C++ code (“SCUC”).
 
 > **Scope note**
 > - The model includes thermal unit commitment, piecewise-linear production costs, startup categories, reserves (with optional shortfall), profiled generators, price-sensitive loads, conventional load curtailment, and a DC network with **PTDF** base-case limits and **LODF** N-1 limits (with soft overflow penalties).
@@ -8,43 +8,45 @@ This document describes the mathematical optimization model implemented in the p
 
 ## 1) Indices, Sets, and Time Convention
 
-All indices are **0-based**.
+All indices are **0-based**, consistent with the code.
 
 ### Sets
-- **Time steps**:  
+- **Time steps**:
   $\mathcal{T}=\{0,1,\dots,T-1\}$
 
-- **Buses**:  
+- **Buses**:
   $\mathcal{B}=\{0,1,\dots,|\mathcal{B}|-1\}$
 
-- **Transmission lines**:  
+- **Transmission lines**:
   $\mathcal{L}=\{0,1,\dots,|\mathcal{L}|-1\}$
 
-- **Thermal generators**:  
+- **Thermal generators**:
   $\mathcal{G}=\{0,1,\dots,|\mathcal{G}|-1\}$
 
-- **Profiled generators**:  
+- **Profiled generators**:
   $\mathcal{P}=\{0,1,\dots,|\mathcal{P}|-1\}$
 
-- **Price-sensitive loads (PSL)**:  
+- **Price-sensitive loads (PSL)**:
   $\mathcal{D}=\{0,1,\dots,|\mathcal{D}|-1\}$
 
-- **Reserve requirement products** (each is a spinning requirement time series):  
+- **Reserve requirement products** (each is a spinning requirement time series):
   $\mathcal{R}=\{0,1,\dots,|\mathcal{R}|-1\}$
 
-- **Reserve-eligible thermal generators**:  
-  Let $\mathcal{G}^{res}\subseteq \mathcal{G}$ be the subset of thermal gens that can provide reserve.  
+- **Reserve-eligible thermal generators**:
+  Let $\mathcal{G}^{res}\subseteq \mathcal{G}$ be the subset of thermal gens that can provide reserve.
   Code builds a mapping:
   `map_res`: $\mathcal{G}^{res}\to \{0,1,\dots,|\mathcal{G}^{res}|-1\}$
   and reserve variables are indexed by $i\in\{0,\dots,|\mathcal{G}^{res}|-1\}$.
 
-- **Relevant N-1 contingency pairs**:  
+- **Relevant N-1 contingency pairs**:
   The code builds a list of monitored/outage pairs:
   $\mathcal{Q}\subseteq \{(k,\ell)\in\mathcal{L}\times\mathcal{L}: k\neq \ell\}$
-  including $(k,\ell)$ if the contingency list contains outage line $k$ and $|\text{LODF}_{\ell,k}|>\varepsilon$.  
+  including $(k,\ell)$ if the contingency list contains outage line $k$ and $|\text{LODF}_{\ell,k}|>\varepsilon$.
   Each pair is indexed by $q\in\{0,\dots,|\mathcal{Q}|-1\}$ with:
   - outage line $k(q)$
   - monitored line $\ell(q)$
+
+
 
 ---
 
@@ -67,8 +69,8 @@ All indices are **0-based**.
   $C^{NL}_g$
 
 - Initial status (integer):
-  - `init_status_g` $> 0$: unit initially ON for $|init\_status_g|$ periods
-  - `init_status_g` $< 0$: unit initially OFF for $|init\_status_g|$ periods
+  - `init_status_g` $> 0$: unit initially ON for $|init\_status\_g|$ periods
+  - `init_status_g` $< 0$: unit initially OFF for $|init\_status\_g|$ periods
 
 - Initial power:
   $P^{init}_g$
@@ -80,6 +82,8 @@ All indices are **0-based**.
 #### Piecewise-linear production segments (for each thermal $g$)
 Let $\mathcal{S}_g=\{0,1,\dots,S_g-1\}$ be the segment set.
 - Segment length $\ell_{g,s}$ and slope $c_{g,s}$ for $s\in\mathcal{S}_g$
+
+
 
 #### Startup categories / stages (for each thermal $g$)
 Let $\mathcal{K}_g=\{0,1,\dots,K_g-1\}$ be the startup stage set.
@@ -235,7 +239,7 @@ Fix a generator $g\in\mathcal{G}$.
 
 ## 6.1 Initial boundary fixes (remaining min up/down)
 
-Let $h_g=|init\_status_g|$, and `initOn_g` $=\mathbf{1}[init\_status_g>0]$.
+Let $h_g=|init\_status\_g|$, and `initOn_g` $=\mathbf{1}[init\_status\_g>0]$.
 
 If `initOn_g` $=1$, define $remUp_g=\max(0,U_g-h_g)$ and enforce:
 $$u_{g,t}=1 \quad \forall t=0,\dots,\min(T-1,remUp_g-1)$$
@@ -246,11 +250,11 @@ $$u_{g,t}=0 \quad \forall t=0,\dots,\min(T-1,remDn_g-1)$$
 ---
 
 ## 6.2 Initial transition at $t=0$
-$$u_{g,0}-initOn_g = y_{g,0}-w_{g,0}$$
+$$u_{g,0}-\text{initOn}_g = y_{g,0}-w_{g,0}$$
 
-### 6.2a Optional tightening at $t=0$
-$$w_{g,0} \le initOn_g$$
-$$y_{g,0} \le 1-initOn_g$$
+### 6.2a Optional tightening at $t=0$ (enforced in code)
+$$w_{g,0} \le \text{initOn}_g$$
+$$y_{g,0} \le 1-\text{initOn}_g$$
 
 ---
 
@@ -270,7 +274,7 @@ $$u_{g,t}-u_{g,t-1}=y_{g,t}-w_{g,t}$$
 
 ---
 
-## 6.6 Start/shut gating
+## 6.6 Start/shut gating (as in code)
 For all $t$:
 - Startup implies on:
 $$y_{g,t} \le u_{g,t}$$
@@ -293,7 +297,7 @@ $$y_{g,t}+w_{g,t}\le 1 \quad \forall t\in\mathcal{T}$$
 Minimum up-time:
 $$\sum_{\tau=\max(0,t-U_g+1)}^{t} y_{g,\tau} \le u_{g,t} \quad \forall t\in\mathcal{T}$$
 
-Minimum down-time:
+Minimum down-time (equivalent to code’s form):
 $$\sum_{\tau=\max(0,t-D_g+1)}^{t} w_{g,\tau} \le 1-u_{g,t} \quad \forall t\in\mathcal{T}$$
 
 ---
@@ -311,8 +315,8 @@ Ramp-down ($t\ge 1$):
 $$p^{above}_{g,t-1}-p^{above}_{g,t}\le RD_g$$
 
 Initial ramps ($t=0$):
-Let `initOn_g` $=\mathbf{1}[init\_status_g>0]$ and
-$$p^{init,above}_g= \begin{cases} \max(0, P^{init}_g-P^{min}_g) & \text{if } initOn_g=1 \\ 0 & \text{if } initOn_g=0 \end{cases}$$
+Let `initOn_g` $=\mathbf{1}[init\_status\_g>0]$ and
+$$p^{init,above}_g= \begin{cases} \max(0, P^{init}_g-P^{min}_g) & \text{if } \text{initOn}_g=1 \\ 0 & \text{if } \text{initOn}_g=0 \end{cases}$$
 Then:
 $$p^{above}_{g,0}+r_{g,0}\le p^{init,above}_g+RU_g$$
 $$p^{above}_{g,0}\le RD_g - p^{init,above}_g$$
@@ -336,7 +340,7 @@ $$p^{above}_{g,t}\le Cap^{above}_g\,u_{g,t}-B_g\,w_{g,t+1}$$
 If must-run:
 $$u_{g,t}=1 \quad \forall t$$
 If fixed commitment `fix`$_{g,t}$ is provided:
-$$u_{g,t}=fix_{g,t} \quad \text{for those } t$$
+$$u_{g,t}=\text{fix}_{g,t} \quad \text{for those } t$$
 
 ---
 
@@ -353,16 +357,16 @@ This section describes the exact logic enforced by the code for choosing startup
 Assume stages are indexed so that:
 $$Del_{g,0}\le Del_{g,1}\le \dots \le Del_{g,K_g-1}$$
 
-Let `initOn_g` $=\mathbf{1}[init\_status_g>0]$ and if `initOn_g` $=0$ define initial offline duration:
-$$initOffDur_g = -init\_status_g \quad (\text{else } initOffDur_g=0).$$
+Let `initOn_g` $=\mathbf{1}[init\_status\_g>0]$ and if `initOn_g` $=0$ define initial offline duration:
+$$initOffDur_g = -init\_status\_g \quad (\text{else } initOffDur_g=0).$$
 
-The code adds constraints only for categories $k=0,\dots,K_g-2$.
+The code adds constraints only for categories $k=0,\dots,K_g-2$ (the last category is not restricted by this routine).
 
 For each time $t\in\mathcal{T}$ and each $k\in\{0,\dots,K_g-2\}$, define:
 - An initial-status allowance term $L^{init}_{g,k,t}\in\{0,1\}$:
   - If the unit is initially OFF, define `offdur` $= initOffDur_g + t$.
   - Then:
-    $$L^{init}_{g,k,t} = \begin{cases} 1 & \text{if } offdur \in [Del_{g,k},\, Del_{g,k+1}-1] \\ 0 & \text{otherwise} \end{cases}$$
+    $$L^{init}_{g,k,t} = \begin{cases} 1 & \text{if } \text{offdur} \in [Del_{g,k},\, Del_{g,k+1}-1] \\ 0 & \text{otherwise} \end{cases}$$
   - If initially ON, then $L^{init}_{g,k,t}=0$.
 
 - A shutdown window:
@@ -374,7 +378,7 @@ $$v_{g,k,t} - \sum_{i=lb}^{ub} w_{g,i} \le L^{init}_{g,k,t}, \quad \text{wheneve
 If the window is empty (i.e., $ub<0$ or $lb>ub$), the constraint reduces to:
 $$v_{g,k,t} \le L^{init}_{g,k,t}.$$
 
-**Interpretation:**
+**Interpretation (code-consistent):**
 - Selecting startup category $k$ at time $t$ is permitted if either:
   - the **initial offline duration** implies category $k$ is feasible at time $t$ (via $L^{init}=1$), or
   - there has been at least one **shutdown event** $w_{g,i}=1$ in the window $i\in[lb,ub]$, i.e., a shutdown occurred at a time consistent with being offline for a duration in $[Del_{g,k},\,Del_{g,k+1}-1]$.
