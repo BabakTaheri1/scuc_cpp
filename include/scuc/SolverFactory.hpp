@@ -15,9 +15,6 @@ SolverTypeFromName(const std::string& name);
 
 /**
  * @brief Create an OR-Tools solver and apply generic settings (time limit, etc.).
- *
- * Note: Some backends (CBC in your build) do not accept solver-specific param strings.
- * We intentionally avoid calling SetSolverSpecificParametersAsString() for CBC to avoid warnings.
  */
 std::unique_ptr<operations_research::MPSolver> CreateSolverOrDie(const ModelConfig& cfg);
 
