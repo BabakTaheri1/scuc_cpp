@@ -8,7 +8,7 @@ This document describes the mathematical optimization model implemented in the p
 
 ## 1) Indices, Sets, and Time Convention
 
-All indices are **0-based**, consistent with the code.
+All indices are **0-based**.
 
 ### Sets
 - **Time steps**:  
@@ -248,7 +248,7 @@ $$u_{g,t}=0 \quad \forall t=0,\dots,\min(T-1,remDn_g-1)$$
 ## 6.2 Initial transition at $t=0$
 $$u_{g,0}-initOn_g = y_{g,0}-w_{g,0}$$
 
-### 6.2a Optional tightening at $t=0$ (enforced in code)
+### 6.2a Optional tightening at $t=0$
 $$w_{g,0} \le initOn_g$$
 $$y_{g,0} \le 1-initOn_g$$
 
@@ -270,7 +270,7 @@ $$u_{g,t}-u_{g,t-1}=y_{g,t}-w_{g,t}$$
 
 ---
 
-## 6.6 Start/shut gating (as in code)
+## 6.6 Start/shut gating
 For all $t$:
 - Startup implies on:
 $$y_{g,t} \le u_{g,t}$$
@@ -293,7 +293,7 @@ $$y_{g,t}+w_{g,t}\le 1 \quad \forall t\in\mathcal{T}$$
 Minimum up-time:
 $$\sum_{\tau=\max(0,t-U_g+1)}^{t} y_{g,\tau} \le u_{g,t} \quad \forall t\in\mathcal{T}$$
 
-Minimum down-time (equivalent to code’s form):
+Minimum down-time:
 $$\sum_{\tau=\max(0,t-D_g+1)}^{t} w_{g,\tau} \le 1-u_{g,t} \quad \forall t\in\mathcal{T}$$
 
 ---
@@ -356,7 +356,7 @@ $$Del_{g,0}\le Del_{g,1}\le \dots \le Del_{g,K_g-1}$$
 Let `initOn_g` $=\mathbf{1}[init\_status_g>0]$ and if `initOn_g` $=0$ define initial offline duration:
 $$initOffDur_g = -init\_status_g \quad (\text{else } initOffDur_g=0).$$
 
-The code adds constraints only for categories $k=0,\dots,K_g-2$ (the last category is not restricted by this routine).
+The code adds constraints only for categories $k=0,\dots,K_g-2$.
 
 For each time $t\in\mathcal{T}$ and each $k\in\{0,\dots,K_g-2\}$, define:
 - An initial-status allowance term $L^{init}_{g,k,t}\in\{0,1\}$:
@@ -374,7 +374,7 @@ $$v_{g,k,t} - \sum_{i=lb}^{ub} w_{g,i} \le L^{init}_{g,k,t}, \quad \text{wheneve
 If the window is empty (i.e., $ub<0$ or $lb>ub$), the constraint reduces to:
 $$v_{g,k,t} \le L^{init}_{g,k,t}.$$
 
-**Interpretation (code-consistent):**
+**Interpretation:**
 - Selecting startup category $k$ at time $t$ is permitted if either:
   - the **initial offline duration** implies category $k$ is feasible at time $t$ (via $L^{init}=1$), or
   - there has been at least one **shutdown event** $w_{g,i}=1$ in the window $i\in[lb,ub]$, i.e., a shutdown occurred at a time consistent with being offline for a duration in $[Del_{g,k},\,Del_{g,k+1}-1]$.
