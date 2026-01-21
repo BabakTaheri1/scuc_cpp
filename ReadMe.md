@@ -423,7 +423,7 @@ $$flow^{cont}_{q,t} = \sum_{b}\Big(PTDF_{\ell,b}+LODF_{\ell,k}\,PTDF_{k,b}\Big)\
 
 ## 11.5 Contingency soft limits
 For each pair $q$ and time $t$:
-$$flow^{cont}_{q,t}\le Lim^{E}_{\ell(q)}+ov^{cont}_{q,t}$$
+$flow^{cont}_{q,t}\le Lim^{E}_{\ell(q)}+ov^{cont}_{q,t}$
 $$-flow^{cont}_{q,t}\le Lim^{E}_{\ell(q)}+ov^{cont}_{q,t}$$
 
 ---
