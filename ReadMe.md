@@ -84,7 +84,7 @@ Let $\mathcal{S}_g=\{0,1,\dots,S_g-1\}$ be the segment set.
 #### Startup categories / stages (for each thermal $g$)
 Let $\mathcal{K}_g=\{0,1,\dots,K_g-1\}$ be the startup stage set.
 - Stage $k$ has:
-  $\mathrm{D}_{g,k}\in\mathbb{Z}_{\ge 0} , \quad C^{SU}_{g,k}\ge 0$
+  $\mathrm{D}_{g,k}, \quad C^{SU}_{g,k}\ge 0$
 
 ---
 
