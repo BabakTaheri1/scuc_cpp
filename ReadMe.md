@@ -4,6 +4,7 @@ This document describes the mathematical optimization model implemented in the p
 
 > **Scope note**
 > - The model includes thermal unit commitment, piecewise-linear production costs, startup categories, reserves (with optional shortfall), profiled generators, price-sensitive loads, conventional load curtailment, and a DC network with **PTDF** base-case limits and **LODF** N-1 limits (with soft overflow penalties).
+
 ---
 
 ## 1) Indices, Sets, and Time Convention
@@ -69,8 +70,8 @@ All indices are **0-based**, consistent with the code.
   $C^{NL}_g$
 
 - Initial status (integer):
-  - `init_status_g` $> 0$: unit initially ON for $|init\_status\_g|$ periods
-  - `init_status_g` $< 0$: unit initially OFF for $|init\_status\_g|$ periods
+  - `init_status_g` $> 0$: unit initially ON for $| \text{init\_status}_g |$ periods
+  - `init_status_g` $< 0$: unit initially OFF for $| \text{init\_status}_g |$ periods
 
 - Initial power:
   $P^{init}_g$
@@ -239,7 +240,7 @@ Fix a generator $g\in\mathcal{G}$.
 
 ## 6.1 Initial boundary fixes (remaining min up/down)
 
-Let $h_g=|init\_status\_g|$, and `initOn_g` $=\mathbf{1}[init\_status\_g>0]$.
+Let $h_g=|\text{init\_status}_g|$, and `initOn_g` $=\mathbf{1}[\text{init\_status}_g>0]$.
 
 If `initOn_g` $=1$, define $remUp_g=\max(0,U_g-h_g)$ and enforce:
 $$u_{g,t}=1 \quad \forall t=0,\dots,\min(T-1,remUp_g-1)$$
@@ -305,7 +306,7 @@ $$\sum_{\tau=\max(0,t-D_g+1)}^{t} w_{g,\tau} \le 1-u_{g,t} \quad \forall t\in\ma
 ## 6.9 Ramping (implemented on above-min)
 
 Define:
-$$p^{above}_{g,t}=\sum_{s\in\mathcal{S}_g} p^{seg}_{g,s,t}.$$
+$$p^{above}_{g,t}=\sum_{s\in\mathcal{S}_g} p^{seg}_{g,s,t}$$
 If $g$ is reserve-eligible, define $r_{g,t}=r_{\text{map\_res}(g),t}$; otherwise $r_{g,t}=0$.
 
 Ramp-up ($t\ge 1$):
@@ -315,7 +316,7 @@ Ramp-down ($t\ge 1$):
 $$p^{above}_{g,t-1}-p^{above}_{g,t}\le RD_g$$
 
 Initial ramps ($t=0$):
-Let `initOn_g` $=\mathbf{1}[init\_status\_g>0]$ and
+Let `initOn_g` $=\mathbf{1}[\text{init\_status}_g>0]$ and
 $$p^{init,above}_g= \begin{cases} \max(0, P^{init}_g-P^{min}_g) & \text{if } \text{initOn}_g=1 \\ 0 & \text{if } \text{initOn}_g=0 \end{cases}$$
 Then:
 $$p^{above}_{g,0}+r_{g,0}\le p^{init,above}_g+RU_g$$
@@ -357,8 +358,8 @@ This section describes the exact logic enforced by the code for choosing startup
 Assume stages are indexed so that:
 $$Del_{g,0}\le Del_{g,1}\le \dots \le Del_{g,K_g-1}$$
 
-Let `initOn_g` $=\mathbf{1}[init\_status\_g>0]$ and if `initOn_g` $=0$ define initial offline duration:
-$$initOffDur_g = -init\_status\_g \quad (\text{else } initOffDur_g=0).$$
+Let `initOn_g` $=\mathbf{1}[\text{init\_status}_g>0]$ and if `initOn_g` $=0$ define initial offline duration:
+$$initOffDur_g = -\text{init\_status}_g \quad (\text{else } initOffDur_g=0)$$
 
 The code adds constraints only for categories $k=0,\dots,K_g-2$ (the last category is not restricted by this routine).
 
@@ -370,13 +371,13 @@ For each time $t\in\mathcal{T}$ and each $k\in\{0,\dots,K_g-2\}$, define:
   - If initially ON, then $L^{init}_{g,k,t}=0$.
 
 - A shutdown window:
-  $$lb = \max(0,\; t-Del_{g,k+1}+1), \qquad ub = t-Del_{g,k}.$$
+  $$lb = \max(0,\; t-Del_{g,k+1}+1), \qquad ub = t-Del_{g,k}$$
 
 Then the code enforces:
-$$v_{g,k,t} - \sum_{i=lb}^{ub} w_{g,i} \le L^{init}_{g,k,t}, \quad \text{whenever } ub\ge 0 \text{ and } lb\le ub.$$
+$$v_{g,k,t} - \sum_{i=lb}^{ub} w_{g,i} \le L^{init}_{g,k,t}, \quad \text{whenever } ub\ge 0 \text{ and } lb\le ub$$
 
 If the window is empty (i.e., $ub<0$ or $lb>ub$), the constraint reduces to:
-$$v_{g,k,t} \le L^{init}_{g,k,t}.$$
+$$v_{g,k,t} \le L^{init}_{g,k,t}$$
 
 **Interpretation (code-consistent):**
 - Selecting startup category $k$ at time $t$ is permitted if either:
